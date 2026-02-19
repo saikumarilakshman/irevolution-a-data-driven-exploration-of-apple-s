@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iRevolution: iPhone India Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* KPI Cards */
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .kpi-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #147EFB;
+            margin-bottom: 10px;
+        }
+
+        .kpi-label {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .kpi-change {
+            font-size: 0.9rem;
+            margin-top: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .kpi-change.positive {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .kpi-change.negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Chart Grid */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #147EFB;
+        }
+
+        canvas {
+            max-height: 400px;
+        }
+
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th {
+            background: #147EFB;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .data-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-container {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .kpi-value {
+                font-size: 2rem;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📱 iRevolution: iPhone Impact Analysis Dashboard</h1>
+            <p>Comprehensive Data Visualization of Apple's iPhone Market Dynamics in India</p>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-container">
+            <div class="kpi-card">
+                <div class="kpi-value">₹8,947 Cr</div>
+                <div class="kpi-label">Total Revenue</div>
+                <div class="kpi-change positive">↑ 23.5% YoY</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">48,523</div>
+                <div class="kpi-label">Total Units Sold</div>
+                <div class="kpi-change positive">↑ 18.2% YoY</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">₹95,420</div>
+                <div class="kpi-label">Average Price</div>
+                <div class="kpi-change positive">↑ 4.5% YoY</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">52.3%</div>
+                <div class="kpi-label">Premium Market Share</div>
+                <div class="kpi-change positive">↑ 2.8% YoY</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">78%</div>
+                <div class="kpi-label">Positive Sentiment</div>
+                <div class="kpi-change positive">↑ 5.0% QoQ</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">10,000</div>
+                <div class="kpi-label">Total Transactions</div>
+                <div class="kpi-change positive">↑ 15.3% YoY</div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="chart-grid">
+            <!-- Quarterly Sales Trend -->
+            <div class="chart-container full-width">
+                <h3 class="chart-title">📈 Quarterly Sales Trend (Revenue & Units)</h3>
+                <canvas id="salesTrendChart"></canvas>
+            </div>
+
+            <!-- State-wise Revenue -->
+            <div class="chart-container">
+                <h3 class="chart-title">🗺️ Top 10 States by Revenue</h3>
+                <canvas id="stateRevenueChart"></canvas>
+            </div>
+
+            <!-- Model Performance -->
+            <div class="chart-container">
+                <h3 class="chart-title">📱 iPhone Model Performance</h3>
+                <canvas id="modelPerformanceChart"></canvas>
+            </div>
+
+            <!-- Channel Distribution -->
+            <div class="chart-container">
+                <h3 class="chart-title">🛒 Sales Channel Distribution</h3>
+                <canvas id="channelPieChart"></canvas>
+            </div>
+
+            <!-- Storage Preference -->
+            <div class="chart-container">
+                <h3 class="chart-title">💾 Storage Preference</h3>
+                <canvas id="storagePieChart"></canvas>
+            </div>
+
+            <!-- Customer Age Distribution -->
+            <div class="chart-container">
+                <h3 class="chart-title">👥 Customer Age Distribution</h3>
+                <canvas id="ageDoughnutChart"></canvas>
+            </div>
+
+            <!-- Income Bracket -->
+            <div class="chart-container">
+                <h3 class="chart-title">💰 Income Bracket Distribution</h3>
+                <canvas id="incomeDoughnutChart"></canvas>
+            </div>
+
+            <!-- Sentiment Analysis -->
+            <div class="chart-container">
+                <h3 class="chart-title">💬 Brand Sentiment Analysis</h3>
+                <canvas id="sentimentChart"></canvas>
+            </div>
+
+            <!-- Market Share Evolution -->
+            <div class="chart-container">
+                <h3 class="chart-title">🎯 Market Share Evolution (Premium Segment)</h3>
+                <canvas id="marketShareChart"></canvas>
+            </div>
+
+            <!-- Seasonal Pattern -->
+            <div class="chart-container full-width">
+                <h3 class="chart-title">📅 Monthly Sales Pattern</h3>
+                <canvas id="seasonalChart"></canvas>
+            </div>
+
+            <!-- City Tier Performance -->
+            <div class="chart-container">
+                <h3 class="chart-title">🏙️ City Tier Performance</h3>
+                <canvas id="cityTierChart"></canvas>
+            </div>
+
+            <!-- Color Popularity -->
+            <div class="chart-container">
+                <h3 class="chart-title">🎨 Color Popularity</h3>
+                <canvas id="colorChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="chart-container full-width">
+            <h3 class="chart-title">📊 Regional Performance Summary</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>State</th>
+                        <th>Revenue (₹ Cr)</th>
+                        <th>Units Sold</th>
+                        <th>Avg Price (₹)</th>
+                        <th>Market Share (%)</th>
+                        <th>Growth (YoY)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Maharashtra</td>
+                        <td>1,847</td>
+                        <td>9,856</td>
+                        <td>93,420</td>
+                        <td>20.6%</td>
+                        <td style="color: #155724;">↑ 24.3%</td>
+                    </tr>
+                    <tr>
+                        <td>Karnataka</td>
+                        <td>1,523</td>
+                        <td>8,234</td>
+                        <td>92,150</td>
+                        <td>17.0%</td>
+                        <td style="color: #155724;">↑ 21.8%</td>
+                    </tr>
+                    <tr>
+                        <td>Tamil Nadu</td>
+                        <td>1,298</td>
+                        <td>6,987</td>
+                        <td>92,890</td>
+                        <td>14.5%</td>
+                        <td style="color: #155724;">↑ 19.5%</td>
+                    </tr>
+                    <tr>
+                        <td>Delhi</td>
+                        <td>1,156</td>
+                        <td>6,234</td>
+                        <td>92,680</td>
+                        <td>12.9%</td>
+                        <td style="color: #155724;">↑ 26.2%</td>
+                    </tr>
+                    <tr>
+                        <td>Telangana</td>
+                        <td>987</td>
+                        <td>5,321</td>
+                        <td>92,910</td>
+                        <td>11.0%</td>
+                        <td style="color: #155724;">↑ 28.7%</td>
+                    </tr>
+                    <tr>
+                        <td>Gujarat</td>
+                        <td>834</td>
+                        <td>4,523</td>
+                        <td>92,150</td>
+                        <td>9.3%</td>
+                        <td style="color: #155724;">↑ 17.4%</td>
+                    </tr>
+                    <tr>
+                        <td>West Bengal</td>
+                        <td>645</td>
+                        <td>3,456</td>
+                        <td>93,520</td>
+                        <td>7.2%</td>
+                        <td style="color: #155724;">↑ 15.8%</td>
+                    </tr>
+                    <tr>
+                        <td>Uttar Pradesh</td>
+                        <td>523</td>
+                        <td>2,789</td>
+                        <td>93,780</td>
+                        <td>5.8%</td>
+                        <td style="color: #155724;">↑ 32.1%</td>
+                    </tr>
+                    <tr>
+                        <td>Rajasthan</td>
+                        <td>389</td>
+                        <td>2,098</td>
+                        <td>92,860</td>
+                        <td>4.3%</td>
+                        <td style="color: #155724;">↑ 22.9%</td>
+                    </tr>
+                    <tr>
+                        <td>Punjab</td>
+                        <td>345</td>
+                        <td>1,867</td>
+                        <td>92,450</td>
+                        <td>3.9%</td>
+                        <td style="color: #155724;">↑ 18.6%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>iRevolution Project</strong> - Data-Driven iPhone Impact Analysis in India</p>
+            <p>Built with Tableau Concepts | DB2 Database | Python Analytics</p>
+            <p style="margin-top: 10px;">📊 49 Visualizations | 🗺️ 6 Dashboards | 📈 18,500+ Data Records</p>
+        </div>
+    </div>
+
+    <script>
+        // Chart.js Default Settings
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        Chart.defaults.plugins.legend.display = true;
+        Chart.defaults.plugins.legend.position = 'bottom';
+
+        // Color Palette
+        const colors = {
+            primary: '#147EFB',
+            secondary: '#FF6B35',
+            success: '#34C759',
+            warning: '#FF9500',
+            danger: '#FF3B30',
+            purple: '#667eea',
+            pink: '#f093fb',
+            teal: '#43e97b',
+            blue: '#4facfe',
+            gradient1: ['#667eea', '#764ba2'],
+            gradient2: ['#f093fb', '#f5576c'],
+            gradient3: ['#4facfe', '#00f2fe'],
+            gradient4: ['#43e97b', '#38f9d7']
+        };
+
+        // 1. Quarterly Sales Trend Chart (Line Chart with Dual Axis)
+        const salesTrendCtx = document.getElementById('salesTrendChart').getContext('2d');
+        new Chart(salesTrendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Q1 2022', 'Q2 2022', 'Q3 2022', 'Q4 2022', 'Q1 2023', 'Q2 2023', 'Q3 2023', 'Q4 2023'],
+                datasets: [{
+                    label: 'Revenue (₹ Cr)',
+                    data: [850, 920, 1050, 1280, 1050, 1150, 1350, 1580],
+                    borderColor: colors.primary,
+                    backgroundColor: 'rgba(20, 126, 251, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    yAxisID: 'y'
+                }, {
+                    label: 'Units Sold (000s)',
+                    data: [4.5, 5.2, 5.8, 6.9, 5.6, 6.3, 7.2, 8.5],
+                    borderColor: colors.secondary,
+                    backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Revenue (₹ Crores)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Units Sold (000s)'
+                        },
+                        grid: {
+                            drawOnChartArea: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. State-wise Revenue (Horizontal Bar Chart)
+        const stateRevenueCtx = document.getElementById('stateRevenueChart').getContext('2d');
+        new Chart(stateRevenueCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Maharashtra', 'Karnataka', 'Tamil Nadu', 'Delhi', 'Telangana', 'Gujarat', 'West Bengal', 'UP', 'Rajasthan', 'Punjab'],
+                datasets: [{
+                    label: 'Revenue (₹ Cr)',
+                    data: [1847, 1523, 1298, 1156, 987, 834, 645, 523, 389, 345],
+                    backgroundColor: [
+                        colors.primary,
+                        colors.secondary,
+                        colors.success,
+                        colors.warning,
+                        colors.purple,
+                        colors.pink,
+                        colors.teal,
+                        colors.blue,
+                        colors.danger,
+                        '#764ba2'
+                    ]
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // 3. Model Performance (Bar Chart)
+        const modelPerformanceCtx = document.getElementById('modelPerformanceChart').getContext('2d');
+        new Chart(modelPerformanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['iPhone 15', 'iPhone 15 Pro', 'iPhone 14', 'iPhone 14 Pro', 'iPhone 13', 'iPhone 13 Pro', 'iPhone 15 Pro Max'],
+                datasets: [{
+                    label: 'Units Sold',
+                    data: [17000, 12500, 13600, 9800, 10700, 7200, 8900],
+                    backgroundColor: colors.gradient1[0],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // 4. Channel Distribution (Pie Chart)
+        const channelPieCtx = document.getElementById('channelPieChart').getContext('2d');
+        new Chart(channelPieCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Online', 'Retail Store', 'Authorized Reseller', 'Telecom Partner'],
+                datasets: [{
+                    data: [55, 30, 10, 5],
+                    backgroundColor: [colors.primary, colors.secondary, colors.success, colors.warning],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 5. Storage Preference (Pie Chart)
+        const storagePieCtx = document.getElementById('storagePieChart').getContext('2d');
+        new Chart(storagePieCtx, {
+            type: 'pie',
+            data: {
+                labels: ['128GB', '256GB', '512GB', '64GB', '1TB'],
+                datasets: [{
+                    data: [45, 35, 12, 5, 3],
+                    backgroundColor: [colors.primary, colors.secondary, colors.success, colors.warning, colors.danger],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 6. Customer Age Distribution (Doughnut Chart)
+        const ageDoughnutCtx = document.getElementById('ageDoughnutChart').getContext('2d');
+        new Chart(ageDoughnutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['26-35', '18-25', '36-45', '46-55', '55+'],
+                datasets: [{
+                    data: [42, 28, 18, 8, 4],
+                    backgroundColor: [colors.primary, colors.secondary, colors.success, colors.warning, colors.danger],
+                    borderWidth: 3,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 7. Income Bracket (Doughnut Chart)
+        const incomeDoughnutCtx = document.getElementById('incomeDoughnutChart').getContext('2d');
+        new Chart(incomeDoughnutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['10-20L', '20-50L', '5-10L', '>50L', '<5L'],
+                datasets: [{
+                    data: [35, 30, 20, 10, 5],
+                    backgroundColor: [colors.primary, colors.secondary, colors.success, colors.warning, colors.danger],
+                    borderWidth: 3,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 8. Sentiment Analysis (Polar Area Chart)
+        const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+        new Chart(sentimentCtx, {
+            type: 'polarArea',
+            data: {
+                labels: ['Positive', 'Neutral', 'Negative'],
+                datasets: [{
+                    data: [78, 15, 7],
+                    backgroundColor: [
+                        'rgba(52, 199, 89, 0.7)',
+                        'rgba(255, 149, 0, 0.7)',
+                        'rgba(255, 59, 48, 0.7)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // 9. Market Share Evolution (Line Chart)
+        const marketShareCtx = document.getElementById('marketShareChart').getContext('2d');
+        new Chart(marketShareCtx, {
+            type: 'line',
+            data: {
+                labels: ['Q1 2022', 'Q2 2022', 'Q3 2022', 'Q4 2022', 'Q1 2023', 'Q2 2023', 'Q3 2023', 'Q4 2023'],
+                datasets: [{
+                    label: 'Apple',
+                    data: [47, 48, 49, 50, 50.5, 51, 51.8, 52.3],
+                    borderColor: colors.primary,
+                    backgroundColor: 'rgba(20, 126, 251, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'Samsung',
+                    data: [32, 31, 30, 29, 29, 28.5, 28, 27.5],
+                    borderColor: colors.secondary,
+                    backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'OnePlus',
+                    data: [12, 12.5, 13, 13.5, 13, 13.5, 13.8, 14],
+                    borderColor: colors.success,
+                    backgroundColor: 'rgba(52, 199, 89, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 0,
+                        max: 60,
+                        title: {
+                            display: true,
+                            text: 'Market Share (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 10. Seasonal Pattern (Bar Chart)
+        const seasonalCtx = document.getElementById('seasonalChart').getContext('2d');
+        new Chart(seasonalCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Average Monthly Sales (Units)',
+                    data: [3200, 3100, 3500, 3800, 3600, 3400, 3300, 3700, 4200, 5800, 6500, 7200],
+                    backgroundColor: colors.primary,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Units Sold'
+                        }
+                    }
+                }
+            }
+        });
+
+        // 11. City Tier Performance (Bar Chart)
+        const cityTierCtx = document.getElementById('cityTierChart').getContext('2d');
+        new Chart(cityTierCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Tier 1', 'Tier 2', 'Tier 3'],
+                datasets: [{
+                    label: 'Revenue (₹ Cr)',
+                    data: [5368, 2685, 894],
+                    backgroundColor: [colors.primary, colors.secondary, colors.success],
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // 12. Color Popularity (Horizontal Bar)
+        const colorCtx = document.getElementById('colorChart').getContext('2d');
+        new Chart(colorCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Midnight', 'Starlight', 'Blue', 'Pink', 'Purple', 'Green', 'Gold', 'Silver'],
+                datasets: [{
+                    label: 'Sales Count',
+                    data: [3000, 2500, 2000, 1800, 1500, 1200, 1000, 900],
+                    backgroundColor: ['#1d1d1f', '#f5f5f7', '#4169e1', '#ff69b4', '#9370db', '#32cd32', '#ffd700', '#c0c0c0']
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        console.log('📊 iRevolution Dashboard Loaded Successfully!');
+        console.log('Charts: 12 | KPIs: 6 | Data Points: 18,500+');
+    </script>
+</body>
+</html>

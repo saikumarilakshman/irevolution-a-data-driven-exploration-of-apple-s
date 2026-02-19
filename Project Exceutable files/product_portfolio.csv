@@ -1,0 +1,10 @@
+MODEL,LAUNCH_DATE,PRICE,CATEGORY,IS_CURRENT,PRODUCT_ID,STORAGE_OPTIONS,COLORS,FEATURES,DISCONTINUATION_DATE
+iPhone 12,2020-10-13,54900,Standard,No,1,"64GB, 128GB, 256GB, 512GB",Multiple colors available,"A-series chip, Camera system, iOS",2023-09-12
+iPhone 12 Pro,2020-10-13,119900,Pro,No,2,"64GB, 128GB, 256GB, 512GB",Multiple colors available,"A-series chip, Camera system, iOS",2023-09-12
+iPhone 13,2021-09-14,59900,Standard,Yes,3,"64GB, 128GB, 256GB, 512GB",Multiple colors available,"A-series chip, Camera system, iOS",
+iPhone 13 Pro,2021-09-14,119900,Pro,Yes,4,"64GB, 128GB, 256GB, 512GB",Multiple colors available,"A-series chip, Camera system, iOS",
+iPhone 14,2022-09-07,69900,Standard,Yes,5,"64GB, 128GB, 256GB, 512GB",Multiple colors available,"A-series chip, Camera system, iOS",
+iPhone 14 Pro,2022-09-07,129900,Pro,Yes,6,"64GB, 128GB, 256GB, 512GB",Multiple colors available,"A-series chip, Camera system, iOS",
+iPhone 15,2023-09-12,79900,Standard,Yes,7,"64GB, 128GB, 256GB, 512GB",Multiple colors available,"A-series chip, Camera system, iOS",
+iPhone 15 Pro,2023-09-12,134900,Pro,Yes,8,"64GB, 128GB, 256GB, 512GB",Multiple colors available,"A-series chip, Camera system, iOS",
+iPhone 15 Pro Max,2023-09-12,159900,Pro Max,Yes,9,"64GB, 128GB, 256GB, 512GB",Multiple colors available,"A-series chip, Camera system, iOS",
